@@ -15,6 +15,7 @@ namespace Perceptron
         public Form1()
         {
             InitializeComponent();
+            
         }
 
         private void chart1_Click(object sender, EventArgs e)
@@ -31,27 +32,30 @@ namespace Perceptron
         private void button1_Click(object sender, EventArgs e)
         {
             Functions functions = new Functions();
-            
+            double learningRate = (double)trackBar1.Value / 10;
+            textBox5.Text = learningRate.ToString();
+
             if (radioButton1.Checked)
             {
                 #region Logical AND
                 textBox1.Text = "AND\r\n";
                 textBox2.Text = "AND\r\n";
                 textBox3.Text = "AND\r\n";
-
+                
                 if (per1 == null)
                 {
                     per1 = new src.Perceptron(
-                        20,
-                        0.2,
+                        120,
+                        learningRate,
                         new Matrix(4, 2, new double[]
                            {
                                 0.0, 0.0, 1.0, 1.0,
                                 0.0, 1.0, 0.0, 1.0
                            }),
                         new double[] { 0.0, 0.0, 0.0, 1.0 });
-                    per1.Test(functions.ThresholdFunction);
                 }
+                per1.Test(learningRate, functions.ThresholdFunction);
+                textBox4.Text = per1.m_NumberOfIterations.ToString(); 
                 for (int row = 0; row < per1.m_DataMatrix.m_NumberOfRows; row++)
                 {
                     for (int col = 0; col < per1.m_DataMatrix.m_NumberOfColumns; col++)
@@ -85,17 +89,17 @@ namespace Perceptron
                 if (per2 == null)
                 {
                     per2 = new src.Perceptron(
-                        20,
-                        0.2,
+                        120,
+                        learningRate,
                         new Matrix(4, 2, new double[]
                            {
                                0.0, 0.0, 1.0, 1.0,
                                0.0, 1.0, 0.0, 1.0
                            }),
                         new double[] { 0.0, 1.0, 1.0, 1.0 });
-                    per2.Test(functions.ThresholdFunction);
                 }
-
+                per2.Test(learningRate, functions.ThresholdFunction);
+                textBox4.Text = per2.m_NumberOfIterations.ToString();
                 for (int row = 0; row < per2.m_DataMatrix.m_NumberOfRows; row++)
                 {
                     for (int col = 0; col < per2.m_DataMatrix.m_NumberOfColumns; col++)
@@ -129,17 +133,17 @@ namespace Perceptron
                 if (mlp == null)
                 {
                     mlp = new MLP(
-                        20,
-                        0.2,
+                        120,
+                        learningRate,
                         new Matrix(4, 2, new double[]
                         {
                             0.0, 0.0, 1.0, 1.0,
                             0.0, 1.0, 0.0, 1.0
                         }),
                         new double[] { 0.0, 1.0, 1.0, 0.0 });
-                    mlp.Test(functions.ThresholdFunction);
                 }
-                
+                mlp.Test(learningRate, functions.ThresholdFunction);
+                textBox4.Text = mlp.m_NumberOfIterations.ToString();
                 for (int row = 0; row < mlp.m_DataMatrix.m_NumberOfRows; row++)
                 {
                     for (int col = 0; col < mlp.m_DataMatrix.m_NumberOfColumns; col++)
@@ -179,6 +183,16 @@ namespace Perceptron
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
             
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

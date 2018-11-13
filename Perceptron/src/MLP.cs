@@ -6,15 +6,16 @@ namespace Perceptron.src
 {
     public class MLP
     {
-        double m_LearningRate;
-
+        public int m_NumberOfIterations;
         public int m_MaxNumOfIterations;
-        public Matrix m_DataMatrix;
-        public double[] m_Target;
+        public double m_LearningRate;
 
-        public Matrix m_Hidden;
-        public Matrix[] m_Weights;
+        public double[] m_Target;
         public double[] m_Output;
+        public Matrix m_DataMatrix;
+        public Matrix m_Hidden;
+        public Matrix[] m_OldWights;
+        public Matrix[] m_Weights;
 
         public MLP(
             int maxIter,
@@ -47,6 +48,14 @@ namespace Perceptron.src
                     }
                 }
             }
+
+            m_OldWights = new Matrix[m_Weights.Length];
+            for (int col = 0; col < m_Weights.Length; col++)
+            {
+                m_OldWights[col] = new Matrix(m_Weights[col]);
+                m_OldWights[col].Assign(m_Weights[col]);
+            }
+
         }
         
         public void Learn(Functions.ActivationFunction activation)
@@ -55,16 +64,16 @@ namespace Perceptron.src
             Matrix result = new Matrix(m_DataMatrix.m_NumberOfRows,
                 m_DataMatrix.m_NumberOfColumns, m_DataMatrix.m_Data);
 
-            int iterations = 0;
+            m_NumberOfIterations = 0;
             double output = 0.0;
             double gerror = 1.0;
             double[] errors = new double[m_DataMatrix.m_NumberOfColumns];
 
             while (gerror != 0)
             {
-                if (iterations >= m_MaxNumOfIterations)
+                if (m_NumberOfIterations >= m_MaxNumOfIterations)
                 {
-                    System.Console.WriteLine($"Number of iterations: {iterations}");
+                    System.Console.WriteLine($"Number of iterations: {m_NumberOfIterations}");
                     return;
                 }
 
@@ -113,21 +122,26 @@ namespace Perceptron.src
                     for (int col = 0; col < m_DataMatrix.m_NumberOfColumns; col++)
                     {
                         m_Weights[1][row + col * m_Weights[1].m_NumberOfRows] +=
-                            0.1 *
+                            m_LearningRate *
                             lErr *
                             m_Hidden[row + col * m_Hidden.m_NumberOfRows];
                     }
                 }
 
-                ++iterations;
+                ++m_NumberOfIterations;
             }
-            System.Console.WriteLine($"Number of iterations: {iterations}");
+            System.Console.WriteLine($"Number of iterations: {m_NumberOfIterations}");
         }
-
-
-
-        public void Test(Functions.ActivationFunction activation)
+        
+        public void Test(double learningRate, Functions.ActivationFunction activation)
         {
+            m_LearningRate = learningRate;
+
+            for (int col = 0; col < m_Weights.Length; col++)
+            {
+                m_Weights[col].Assign(m_OldWights[col]);
+            }
+
             Learn(activation);
             double output = 0.0;
             m_Output = new double[m_DataMatrix.m_NumberOfRows];
@@ -156,100 +170,5 @@ namespace Perceptron.src
             }
         }
     }
-
-    public class Persaceptron
-    {
-
-        double[] enters;
-        double[] hidden;
-        double outer;
-        double[][] wEH;
-        double[] wHO;
-        double[][] patterns = {
-            new double[]{0, 0}, 
-            new double[]{1, 0}, 
-            new double[]{0, 1}, 
-            new double[]{1, 1}
-        };
-        double[] answers = { 0, 1, 1, 0 };
-
-        Persaceptron()
-        {
-            enters = new double[patterns[0].Length];
-            hidden = new double[2];
-            wEH = new double[enters.Length][];
-            wHO = new double[hidden.Length];
-
-            initWeights();
-            study();
-            for (int p = 0; p < patterns.Length; p++)
-            {
-                for (int i = 0; i < enters.Length; i++)
-                    enters[i] = patterns[p][i];
-
-                countOuter();
-            }
-
-        }
-
-        public void initWeights()
-        {
-        }
-
-        public void countOuter()
-        {
-            for (int i = 0; i < hidden.Length; i++)
-            {
-                hidden[i] = 0;
-                for (int j = 0; j < enters.Length; j++)
-                {
-                    hidden[i] += enters[j] * wEH[j][i];
-                }
-                if (hidden[i] > 0.5) hidden[i] = 1;
-                else hidden[i] = 0;
-            }
-            outer = 0;
-            for (int i = 0; i < hidden.Length; i++)
-            {
-                outer += hidden[i] * wHO[i];
-            }
-            if (outer > 0.5) outer = 1;
-            else outer = 0;
-        }
-
-        public void study()
-        {
-            double[] err = new double[hidden.Length];
-            double gError = 0;
-            do
-            {
-                gError = 0;
-                for (int p = 0; p < patterns.Length; p++)
-                {
-                    for (int i = 0; i < enters.Length; i++)
-                        enters[i] = patterns[p][i];
-
-                    countOuter();
-
-                    double lErr = answers[p] - outer;
-                    gError += Math.Abs(lErr);
-
-                    for (int i = 0; i < hidden.Length; i++)
-                        err[i] = lErr * wHO[i];
-
-                    for (int i = 0; i < enters.Length; i++)
-                    {
-                        for (int j = 0; j < hidden.Length; j++)
-                        {
-                            wEH[i][j] += 0.1 * err[j] * enters[i];
-
-                        }
-                    }
-                    for (int i = 0; i < hidden.Length; i++)
-                        wHO[i] += 0.1 * lErr * hidden[i];
-                }
-            } while (gError != 0);
-        }
-    }
-
+    
 }
