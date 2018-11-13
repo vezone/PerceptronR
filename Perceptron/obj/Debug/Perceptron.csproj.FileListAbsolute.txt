@@ -1,0 +1,10 @@
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\bin\Debug\Perceptron.exe.config
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\bin\Debug\Perceptron.exe
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\bin\Debug\Perceptron.pdb
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\obj\Debug\Perceptron.csprojAssemblyReference.cache
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\obj\Debug\Perceptron.Form1.resources
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\obj\Debug\Perceptron.Properties.Resources.resources
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\obj\Debug\Perceptron.csproj.GenerateResource.cache
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\obj\Debug\Perceptron.csproj.CoreCompileInputs.cache
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\obj\Debug\Perceptron.exe
+E:\General\Programming\C_Sharp\WinForms\Perceptron\Perceptron\obj\Debug\Perceptron.pdb
