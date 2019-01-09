@@ -6,14 +6,16 @@ namespace Perceptron.src
 {
     public class Perceptron
     {
-        public int      m_NumberOfIterations;
-        public int      m_MaxNumOfIterations;
-        public double   m_LearningRate;
+        public int m_NumberOfIterations;
+        public int m_MaxNumOfIterations;
+        public double m_LearningRate;
         public double[] m_Outputs;
         public double[] m_TargetVector;
-        public Matrix   m_Weights;
-        public Matrix   m_OldWeights;
-        public Matrix   m_DataMatrix;
+        //NOTE: changing public Matrix m_Weights;
+        public double[] m_Weights;
+        public double[] m_OldWights;
+        
+        public Matrix m_DataMatrix;
 
         public Perceptron(
             int maxIter,
@@ -26,28 +28,27 @@ namespace Perceptron.src
             m_DataMatrix = new Matrix(dataMatrix);
             m_TargetVector = new double[targetVector.Length];
             System.Array.Copy(targetVector, m_TargetVector, targetVector.Length);
-            m_Weights = new Matrix(dataMatrix.m_NumberOfRows, dataMatrix.m_NumberOfColumns);
+            m_Weights = new double[2];
             
             Random rand = new Random();
-            for (int row = 0; row < m_Weights.m_NumberOfRows; row++)
+            for (int index = 0; index < m_Weights.Length; index++)
             {
-                for (int col = 0; col < m_Weights.m_NumberOfColumns; col++)
-                {
-                    m_Weights[row + col* m_Weights.m_NumberOfRows] = rand.NextDouble() / 4;
-                }
+                m_Weights[index] = 
+                    rand.NextDouble() / 4;
             }
-            m_OldWeights = new Matrix(m_Weights);
-            m_OldWeights.Assign(m_Weights);
+            m_OldWights = new double[m_Weights.Length];
+            Array.Copy(m_Weights, m_OldWights, m_Weights.Length);
         }
 
         public void Learn(Functions.ActivationFunction activation)
         {
             //xi*wi
+            Matrix result = new Matrix(m_DataMatrix.m_NumberOfRows,
+                m_DataMatrix.m_NumberOfColumns, m_DataMatrix.m_Data);
             
             m_NumberOfIterations = 0;
             double output = 0.0;
             double gerror = 1.0;
-            double t = 0.0;
 
             while (gerror != 0)
             {
@@ -58,65 +59,69 @@ namespace Perceptron.src
                 }
 
                 gerror = 0.0;
-                for (int row = 0; row < m_DataMatrix.m_NumberOfRows; row++)
+                if (m_DataMatrix.m_NumberOfColumns == m_Weights.Length)
                 {
-                    output = 0.0;
-                    t = 0.0;
-                    for (int col = 0; col < (m_DataMatrix.m_NumberOfColumns); col++)
+                    for (int row = 0; row < m_DataMatrix.m_NumberOfRows; row++)
                     {
-                        t = (m_DataMatrix[row + col * m_DataMatrix.m_NumberOfRows] == 0) ? 1 : t;
-                        output += 
-                            m_DataMatrix[row + col * m_DataMatrix.m_NumberOfRows]
-                            * m_Weights[row + col*m_Weights.m_NumberOfRows];
-                    }
+                        output = 0.0;
 
-                    output -= t;
-                    output = activation(output);
-                    double error = m_TargetVector[row] - output;
-
-                    if (error != 0)
-                    {
-                        gerror += System.Math.Abs(error);
-
-                        for (int el = 0; el < m_Weights.m_NumberOfColumns; el++)
+                        for (int col = 0; col < (m_DataMatrix.m_NumberOfColumns); col++)
                         {
-                            m_Weights[row + el * m_Weights.m_NumberOfRows] +=
-                                m_LearningRate * error * 
-                                m_Weights[row + el * m_Weights.m_NumberOfRows];
+                            output +=
+                                m_DataMatrix[row + col * m_DataMatrix.m_NumberOfRows]
+                                * m_Weights[col];
                         }
-                    }
+                        output = activation(output);
+                        double error = m_TargetVector[row] - output;
 
+                        if (error != 0)
+                        {
+                            gerror += error;
+
+                            for (int index = 0; 
+                                index < m_Weights.Length; 
+                                index++)
+                            {
+                                m_Weights[index] +=
+                                    m_LearningRate * error
+                                    * m_DataMatrix.m_Data[row + index * m_DataMatrix.m_NumberOfRows];
+                                ;
+                            }
+                        }
+
+                    }
                 }
-                
+                else
+                {
+                    //
+                }
                 ++m_NumberOfIterations;
             }
             System.Console.WriteLine($"Number of iterations: {m_NumberOfIterations}");
         }
         
-        public void Test(double learningRate, Functions.ActivationFunction activation)
+        public void Test(
+            double learningRate, 
+            Functions.ActivationFunction activation)
         {
             m_LearningRate = learningRate;
-            m_Weights.Assign(m_OldWeights);
+            Array.Copy(m_Weights, m_OldWights, m_Weights.Length);
             Learn(activation);
 
-            m_Outputs = new double[m_DataMatrix.m_NumberOfRows];
             double output = 0.0;
-            double t = 0.0;
-
-            for (int pat = 0; pat < m_DataMatrix.m_NumberOfRows; pat++)
+            m_Outputs = new double[m_DataMatrix.m_NumberOfRows];
+            for (int row = 0; row < m_DataMatrix.m_NumberOfRows; row++)
             {
-                t = 0.0;
-                for (int el = 0; el < (m_DataMatrix.m_NumberOfColumns); el++)
+                output = 0.0;
+                for (int col = 0; col < (m_DataMatrix.m_NumberOfColumns); col++)
                 {
-                    t = (m_DataMatrix[pat + el * m_DataMatrix.m_NumberOfRows] == 0) ? 1 : t;
                     output += 
-                        m_DataMatrix[pat + el * m_DataMatrix.m_NumberOfRows] *
-                        m_Weights[pat + el * m_Weights.m_NumberOfRows]
-                        ;
+                        m_DataMatrix[row + 
+                            col * m_DataMatrix.m_NumberOfRows]
+                        * m_Weights[col];
                 }
-                output -= t;
                 output = activation(output);
-                m_Outputs[pat] = output;
+                m_Outputs[row] = output;
             }
 
         }
