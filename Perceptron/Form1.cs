@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using Perceptron.src;
 using Perceptron.src.math;
 
-
 namespace Perceptron
 {
     public partial class Form1 : Form
@@ -15,18 +14,16 @@ namespace Perceptron
         public Form1()
         {
             InitializeComponent();
-            
         }
 
         private void chart1_Click(object sender, EventArgs e)
         {
             //learning rate
-            
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-
+            //
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -41,21 +38,19 @@ namespace Perceptron
                 textBox1.Text = "AND\r\n";
                 textBox2.Text = "AND\r\n";
                 textBox3.Text = "AND\r\n";
+
+                per1 = new src.Perceptron(
+                    120,
+                    learningRate,
+                    new Matrix(4, 2, new double[]
+                       {
+                            0.0, 0.0, 1.0, 1.0,
+                            0.0, 1.0, 0.0, 1.0
+                       }),
+                    new double[] { 0.0, 0.0, 0.0, 1.0 });
                 
-                if (per1 == null)
-                {
-                    per1 = new src.Perceptron(
-                        120,
-                        learningRate,
-                        new Matrix(4, 2, new double[]
-                           {
-                                0.0, 0.0, 1.0, 1.0,
-                                0.0, 1.0, 0.0, 1.0
-                           }),
-                        new double[] { 0.0, 0.0, 0.0, 1.0 });
-                }
                 per1.Test(learningRate, functions.ThresholdFunction);
-                textBox4.Text = per1.m_NumberOfIterations.ToString(); 
+                textBox4.Text = per1.m_NumberOfIterations.ToString();
                 for (int row = 0; row < per1.m_DataMatrix.m_NumberOfRows; row++)
                 {
                     for (int col = 0; col < per1.m_DataMatrix.m_NumberOfColumns; col++)
@@ -67,10 +62,10 @@ namespace Perceptron
                         (col == per1.m_DataMatrix.m_NumberOfColumns - 1) ? "\r\n" : "");
                     }
                 }
-                for (int w = 0; w < per1.m_Weights.m_Data.Length; w++)
+                for (int w = 0; w < per1.m_Weights.Length; w++)
                 {
                     textBox1.Text += per1.m_Weights[w] + 
-                        ((w != per1.m_Weights.m_Data.Length-1) ? "\r\n":"");
+                        ((w != per1.m_Weights.Length-1) ? "\r\n":"");
                 }
                 for (int o = 0; o < per1.m_Outputs.Length; o++)
                 {
@@ -86,18 +81,16 @@ namespace Perceptron
                 textBox2.Text = "OR\r\n";
                 textBox3.Text = "OR\r\n";
 
-                if (per2 == null)
-                {
-                    per2 = new src.Perceptron(
-                        120,
-                        learningRate,
-                        new Matrix(4, 2, new double[]
-                           {
-                               0.0, 0.0, 1.0, 1.0,
-                               0.0, 1.0, 0.0, 1.0
-                           }),
-                        new double[] { 0.0, 1.0, 1.0, 1.0 });
-                }
+                per2 = new src.Perceptron(
+                    120,
+                    learningRate,
+                    new Matrix(4, 2, new double[]
+                       {
+                           0.0, 0.0, 1.0, 1.0,
+                           0.0, 1.0, 0.0, 1.0
+                       }),
+                    new double[] { 0.0, 1.0, 1.0, 1.0 });
+                
                 per2.Test(learningRate, functions.ThresholdFunction);
                 textBox4.Text = per2.m_NumberOfIterations.ToString();
                 for (int row = 0; row < per2.m_DataMatrix.m_NumberOfRows; row++)
@@ -111,10 +104,10 @@ namespace Perceptron
                         (col == per2.m_DataMatrix.m_NumberOfColumns-1) ? "\r\n" : "");
                     }
                 }
-                for (int w = 0; w < per2.m_Weights.m_Data.Length; w++)
+                for (int w = 0; w < per2.m_Weights.Length; w++)
                 {
                     textBox1.Text += per2.m_Weights[w] +
-                        ((w != per2.m_Weights.m_Data.Length - 1) ? "\r\n" : "");
+                        ((w != per2.m_Weights.Length - 1) ? "\r\n" : "");
                 }
                 for (int o = 0; o < per2.m_Outputs.Length; o++)
                 {
